@@ -3,6 +3,7 @@ package dev.cammiescorner.fireworkfrenzy.component;
 import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
 import dev.cammiescorner.fireworkfrenzy.client.FireworkFrenzyClient;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
@@ -10,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +23,7 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 	private final Player player;
 	private boolean blastJumping = false;
 	private int timeOnGround = 0;
+	private int consecutiveJumps = 0;
 
 	public PlayerBlastJumper(Player player) {
 		this.player = player;
@@ -39,6 +42,12 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 	@Override
 	public void setBlastJumping(boolean blastJumping) {
 		this.blastJumping = blastJumping;
+		if(blastJumping) {
+			consecutiveJumps++;
+			if(player instanceof ServerPlayer serverPlayer) {
+				FireworkFrenzyCriteriaTriggers.CONSECUTIVE_BLAST_JUMPS.trigger(serverPlayer, consecutiveJumps);
+			}
+		}
 	}
 
 	@Override
@@ -78,6 +87,10 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 		if(isBlastJumping()) {
 			if(player.onGround() || player.isUnderWater()) {
 				setTimeOnGround(timeOnGround + 1);
+				if(this.consecutiveJumps > 0) {
+					this.consecutiveJumps = 0;
+					sync();
+				}
 			}
 
 			if(getTimeOnGround() > 2 || player.isPassenger() || (FireworkFrenzyConfig.elytraCancelsRocketJumping && player.isFallFlying()) || !player.isAlive() || player.isSpectator() || player.getAbilities().flying) {

@@ -1,6 +1,8 @@
 {
   "advancements.fireworkfrenzy.adventure.sonic_boom.description": "Through blast jumping, accelerate to the speed of sound (...or thereabouts)",
   "advancements.fireworkfrenzy.adventure.sonic_boom.title": "Sonic Boom",
+  "advancements.fireworkfrenzy.adventure.the_floor_is_lava.description": "Perform 6 consecutive blast jumps without touching the ground",
+  "advancements.fireworkfrenzy.adventure.the_floor_is_lava.title": "The floor is Lava",
   "config.fireworkfrenzy.air_strafe_speed_multiplier": "Rocket jumping air strafe speed multiplier",
   "config.fireworkfrenzy.airstrike_damage_multiplier": "Air Strike damage multiplier while rocket jumping",
   "config.fireworkfrenzy.airstrike_grounded_charge_time": "Air Strike charge time while grounded",

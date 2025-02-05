@@ -1,0 +1,32 @@
+{
+  "parent": "fireworkfrenzy:adventure/sonic_boom",
+  "criteria": {
+    "do_multi_jump": {
+      "conditions": {
+        "jumps": 6
+      },
+      "trigger": "fireworkfrenzy:consecutive_blast_jumps"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.fireworkfrenzy.adventure.the_floor_is_lava.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "item": "minecraft:lava_bucket"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.fireworkfrenzy.adventure.the_floor_is_lava.title"
+    }
+  },
+  "requirements": [
+    [
+      "do_multi_jump"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

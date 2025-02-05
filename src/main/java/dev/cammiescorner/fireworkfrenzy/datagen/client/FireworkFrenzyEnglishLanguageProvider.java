@@ -19,6 +19,7 @@ public class FireworkFrenzyEnglishLanguageProvider extends SparkweaveLanguagePro
 	@Override
 	public void generateTranslations(TranslationBuilder translationBuilder) {
 		advancement(translationBuilder, FireworkFrenzyAdvancements.SONIC_BOOM, "Sonic Boom", "Through blast jumping, accelerate to the speed of sound (...or thereabouts)");
+		advancement(translationBuilder, FireworkFrenzyAdvancements.THE_FLOOR_IS_LAVA, "The floor is Lava", "Perform 6 consecutive blast jumps without touching the ground");
 
 		damageType(translationBuilder, FireworkFrenzyDamageTypes.DAMAGE_CLOUD, "%s got blown up", "%s got blown up by %s", "%s got blown up by %s using %s");
 

@@ -174,7 +174,7 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 						target.setDeltaMovement(targetVelocity);
 						target.hurtMarked = true;
 						if(target instanceof ServerPlayer serverPlayer) {
-							FireworkFrenzyCriteriaTriggers.DO_BLAST_JUMP.trigger(serverPlayer, targetVelocity.length());
+							FireworkFrenzyCriteriaTriggers.BLAST_JUMP.trigger(serverPlayer, targetVelocity.length());
 						}
 					}
 				}
