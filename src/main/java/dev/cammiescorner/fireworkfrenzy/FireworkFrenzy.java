@@ -1,54 +1,33 @@
 package dev.cammiescorner.fireworkfrenzy;
 
-import dev.cammiescorner.fireworkfrenzy.common.enchantments.AirStrikeEnchantment;
-import dev.cammiescorner.fireworkfrenzy.common.enchantments.FixedFuseEnchantment;
-import dev.cammiescorner.fireworkfrenzy.common.enchantments.TakeoffEnchantment;
-import dev.cammiescorner.fireworkfrenzy.common.entities.DamageCloudEntity;
-import dev.cammiescorner.fireworkfrenzy.common.compat.FireworkFrenzyConfig;
-import eu.midnightdust.lib.config.MidnightConfig;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
-import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import com.teamresourceful.resourcefulconfig.common.config.Configurator;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEnchantments;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEntityTypes;
+import dev.upcraft.sparkweave.api.registry.RegistryService;
+import dev.upcraft.sparkweave.api.util.logging.SparkweaveLoggerFactory;
+import net.fabricmc.api.ModInitializer;
+import net.minecraft.resources.ResourceLocation;
+import org.apache.logging.log4j.Logger;
 
 public class FireworkFrenzy implements ModInitializer {
-	public static final TrackedData<Boolean> BLAST_JUMPING = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	public static final TrackedData<Integer> TIME_ON_GROUND = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public static final String MOD_ID = "fireworkfrenzy";
 
-	public static Enchantment TAKEOFF;
-	public static Enchantment AIR_STRIKE;
-	public static Enchantment FIXED_FUSE;
-	public static EntityType<DamageCloudEntity> DAMAGE_CLOUD;
-	public static final RegistryKey<DamageType> DAMAGE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(MOD_ID, "damage_cloud"));
+	public static final String MOD_ID = "fireworkfrenzy";
+	public static final Logger LOGGER = SparkweaveLoggerFactory.getLogger();
+	public static final Configurator CONFIGURATOR = new Configurator();
 
 	@Override
-	public void onInitialize(ModContainer mod) {
-		MidnightConfig.init(MOD_ID, FireworkFrenzyConfig.class);
+	public void onInitialize() {
+		CONFIGURATOR.registerConfig(FireworkFrenzyConfig.class);
 
-		TAKEOFF = Registry.register(Registries.ENCHANTMENT, new Identifier(MOD_ID, "takeoff"), new TakeoffEnchantment());
-		AIR_STRIKE = Registry.register(Registries.ENCHANTMENT, new Identifier(MOD_ID, "air_strike"), new AirStrikeEnchantment());
-		FIXED_FUSE = Registry.register(Registries.ENCHANTMENT, new Identifier(MOD_ID, "fixed_fuse"), new FixedFuseEnchantment());
-		DAMAGE_CLOUD = Registry.register(Registries.ENTITY_TYPE, new Identifier(MOD_ID, "potion_cloud"), FabricEntityTypeBuilder.create().entityFactory(DamageCloudEntity::new).fireImmune().dimensions(EntityDimensions.changing(6F, 6F)).build());
+		var registryService = RegistryService.get();
+		FireworkFrenzyEnchantments.ENCHANTMENTS.accept(registryService);
+		FireworkFrenzyEntityTypes.ENTITY_TYPES.accept(registryService);
+
+		FireworkFrenzyCriteriaTriggers.register();
 	}
 
-	public static DamageSource damageCloud(DamageCloudEntity cloud, @Nullable Entity owner) {
-		return new DamageSource(cloud.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).getHolderOrThrow(DAMAGE_TYPE), cloud, owner);
+	public static ResourceLocation id(String path) {
+		return new ResourceLocation(MOD_ID, path);
 	}
 }

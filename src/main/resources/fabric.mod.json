@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_display_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "Cammie",
+    "Up"
+  ],
+  "contributors": [
+  ],
+  "contact": {
+    "homepage": "${homepage_url}",
+    "sources": "${sources_url}",
+    "issues": "${issues_url}"
+  },
+  "license": "${license_url}",
+  "icon": "icon.png",
+  "environment": "*",
+  "custom": {
+    "mc-publish": {
+      "curseforge": "520310",
+      "modrinth": "BMFTOutp",
+      "dependencies": [
+        "fabric-api(required){modrinth:P7dR8mSH}{curseforge:306612}",
+        "resourcefulconfig(required){modrinth:M1953qlQ}{curseforge:714059}",
+        "sparkweave(required){modrinth:nf68xfAw}{curseforge:911456}",
+        "cardinal-components-base(required){modrinth:K01OU20C}{curseforge:318449}",
+        "cardinal-components-entity#(ignore:true)",
+        "explosiveenhancement(optional){modrinth:OSQ8mw2r}#(ignore:curseforge)"
+      ],
+      "loaders": [
+        "fabric",
+        "quilt"
+      ],
+      "java": [
+        "${java_version}"
+      ]
+    },
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "${discord_url}"
+      }
+    },
+    "cardinal-components": [
+      "${mod_id}:blast_jumper"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "=${minecraft_version}",
+    "java": ">=${java_version}",
+    "fabric-api": "*",
+    "resourcefulconfig": "*",
+    "sparkweave": ">=0.8.8 <0.100.0",
+    "cardinal-components-base": "*",
+    "cardinal-components-entity": "*"
+  },
+  "entrypoints": {
+    "main": [
+      "dev.cammiescorner.fireworkfrenzy.FireworkFrenzy"
+    ],
+    "client": [
+      "dev.cammiescorner.fireworkfrenzy.client.FireworkFrenzyClient"
+    ],
+    "fabric-datagen": [
+      "dev.cammiescorner.fireworkfrenzy.datagen.FireworkFrenzyDatagenerator"
+    ],
+    "cardinal-components": [
+      "dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents"
+    ],
+    "modmenu": [
+      "dev.cammiescorner.fireworkfrenzy.compat.ModmenuCompat"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "accessWidener": "${mod_id}.accesswidener"
+}

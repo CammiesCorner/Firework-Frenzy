@@ -1,107 +1,206 @@
 plugins {
+	id 'idea'
 	id 'maven-publish'
-	alias libs.plugins.quilt.loom
+	alias libs.plugins.fabric.loom
 }
+
+def ENV = System.getenv()
+def buildTime = ENV.BUILD_TIME ?: new Date().format("yyyyMMddHHmmss")
+
+def javaVersion = 17
+
+group = project.maven_group_id
+
+boolean isPreviewBuild = !ENV.TAG || ENV.TAG.matches(".+-.+")
+def buildNumber = !ENV.TAG ? ("${ENV.BUILD_NUMBER ? "build.${ENV.BUILD_NUMBER}" : buildTime}-${libs.versions.minecraft.get()}") : ""
+version = (ENV.TAG ?: "development") + ((isPreviewBuild && !ENV.TAG) ? "+${buildNumber}" : "")
 
 base {
-	archivesName = project.archives_base_name
-}
-
-version = "$project.version+${libs.versions.minecraft.get()}"
-group = project.maven_group
-
-loom {
-	mods {
-		"minecarttweaks" {
-			// Tell Loom about each source set used by your mod here. This ensures that your mod's classes are properly transformed by Loader.
-			sourceSet("main")
-		}
-	}
-
-	accessWidenerPath.set(project.file("src/main/resources/fireworkfrenzy.accesswidener"))
-}
-
-project.configurations.configureEach {
-	exclude(group: "net.fabricmc", module: "fabric-loader")
-	exclude(group: "net.fabricmc.fabric-api")
+	archivesName.set(project.mod_id)
 }
 
 repositories {
+	mavenCentral()
+	maven { url = 'https://maven.terraformersmc.com' }
+	maven { url = 'https://maven.uuid.gg/releases' }
+	maven { url = 'https://maven.ladysnake.org/releases' }
+	maven { url = 'https://nexus.resourcefulbees.com/repository/maven-public' }
+	maven { url = 'https://maven.blamejared.com' }
 	maven {
-		name = "TerraformersMC"
-		url = "https://maven.terraformersmc.com"
-	}
-	maven {
-		name = "Modrinth"
-		url = "https://api.modrinth.com/maven"
+		name = 'ParchmentMC'
+		url = 'https://maven.parchmentmc.org'
 		content {
-			includeGroup "maven.modrinth"
+			includeGroupAndSubgroups('org.parchmentmc')
+		}
+	}
+	exclusiveContent {
+		forRepository {
+			maven { url = "https://api.modrinth.com/maven" }
+		}
+		filter {
+			includeGroup("maven.modrinth")
+		}
+	}
+	exclusiveContent {
+		forRepository {
+			maven { url = "https://cursemaven.com" }
+		}
+		filter {
+			includeGroup("curse.maven")
 		}
 	}
 }
 
 dependencies {
 	minecraft libs.minecraft
-	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
-	modImplementation libs.quilt.loader
+	mappings(loom.layered {
+		it.officialMojangMappings()
+		it.parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip")
+	})
 
-	modImplementation libs.quilted.fabric.api
-	modImplementation libs.modmenu
-	modImplementation libs.midnightlib
-	modImplementation libs.explosive.enhancement
-	modImplementation libs.yacl
-	modImplementation libs.dummy
-	modImplementation libs.moonlight
+	compileOnly libs.jetbrains.annotations
+
+	modImplementation libs.fabric.loader
+	modImplementation libs.fabric.api
+
+	modImplementation libs.sparkweave
+
+	modImplementation libs.bundles.cca
+
+	modCompileOnly libs.modmenu
+	modLocalRuntime libs.modmenu
+
+	modImplementation libs.resourceful.config
+
+	modCompileOnly variantOf(libs.emi) { classifier 'api' }
+	modLocalRuntime libs.emi
+
+	modCompileOnly libs.jei.api
+	modLocalRuntime libs.jei.full
+
+	modCompileOnly libs.explosiveenhancement
+	modLocalRuntime libs.explosiveenhancement
+}
+
+fabricApi {
+	configureDataGeneration()
+}
+
+loom {
+	mods {
+		"${mod_id}" {
+			// Tell Loom about each source set used by your mod here. This ensures that your mod's classes are properly transformed by Loader.
+			sourceSet("main")
+		}
+	}
+
+	accessWidenerPath.set(project.file("src/main/resources/${mod_id}.accesswidener"))
+
+	runs {
+		client {
+			ideConfigGenerated(true)
+			runDir("run")
+
+			if (project.hasProperty('mc_uuid')) {
+				programArg("--uuid=${project.findProperty('mc_uuid')}")
+			}
+
+			if (project.hasProperty('mc_username')) {
+				programArg("--username=${project.findProperty('mc_username')}")
+			}
+
+			if (project.hasProperty('mc_java_agent_path')) {
+				vmArg("-javaagent:${project.findProperty('mc_java_agent_path')}")
+			}
+		}
+	}
 }
 
 processResources {
-	inputs.property 'version', version
+	filteringCharset = "UTF-8"
 
-	filesMatching('quilt.mod.json') {
-		expand 'version': version
+	def expandProps = [
+		"version"             : version,
+		"maven_group_id"      : maven_group_id,
+		"mod_id"              : mod_id,
+		"mod_display_name"    : mod_display_name,
+		"mod_description"     : mod_description,
+		"sources_url"         : sources_url,
+		"issues_url"          : issues_url,
+		"license_url"         : license_url,
+		"discord_url"         : discord_url,
+		"homepage_url"        : homepage_url,
+
+		"minecraft_version"   : libs.versions.minecraft.get(),
+		"fabric_loader_version": libs.versions.fabric.loader.get(),
+		"java_version": "${javaVersion}",
+	]
+
+	filesMatching(['pack.mcmeta', '*.mod.json', '*.mixins.json']) {
+		expand expandProps
 	}
+	inputs.properties(expandProps)
 }
 
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = 'UTF-8'
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release = 17
+tasks.withType(JavaCompile) {
+	// ensure that the encoding is set to UTF-8, no matter what the system default is
+	// this fixes some edge cases with special characters not displaying correctly
+	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+	options.encoding = "UTF-8"
+
+	options.release.set(javaVersion)
 }
 
 java {
-	// Still required by IDEs such as Eclipse and Visual Studio Code
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
-	// Uncomment this line to generate them.
-	// withJavadocJar()
-}
-
-// If you plan to use a different file for the license, don't forget to change the file name here!
-jar {
-	from('LICENSE') {
-		rename { "${it}_${base.archivesName.get()}" }
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(javaVersion))
+		// TODO re-enable when switching to java 21
+//        vendor = JvmVendorSpec.MICROSOFT
 	}
 }
 
-// Configure the maven publication
+jar {
+	from(layout.projectDirectory) {
+		include "LICENSE"
+		rename { "LICENSE_${project.mod_id}" }
+	}
+
+	manifest.mainAttributes(
+		"Implementation-Title": project.mod_id,
+		"Implementation-Version": project.version,
+		"Maven-Artifact": "${project.group}:${rootProject.name}-Fabric:${project.version}",
+		"Built-On-Minecraft": libs.versions.minecraft.get(),
+		"Built-On-Java": "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})"
+	)
+}
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
+			artifactId "${rootProject.name}-Fabric"
 			from components.java
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+		if (ENV.MAVEN_UPLOAD_URL) {
+			maven {
+				url = ENV.MAVEN_UPLOAD_URL
+				credentials {
+					username = ENV.MAVEN_UPLOAD_USERNAME
+					password = ENV.MAVEN_UPLOAD_PASSWORD
+				}
+			}
+		}
+	}
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+	module {
+		downloadSources = true
+		downloadJavadoc = true
 	}
 }
