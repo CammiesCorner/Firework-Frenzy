@@ -1,9 +1,4 @@
-<p align="center">
-    <a href="https://modrinth.com/mod/qsl"><img src="https://raw.githubusercontent.com/intergrav/devins-badges/v3/assets/cozy/requires/quilt-standard-libraries_64h.png" width="311" height="64" title="Quilt Standard Libraries" alt="Quilt Standard Libraries"></a>
-</p>
-
----
-
+# Firework Frenzy
 Firework Frenzy is a mod that overhauls how Firework Rockets are used in conjunction with the crossbow.
 
 <details>
@@ -35,7 +30,7 @@ Firework Frenzy is a mod that overhauls how Firework Rockets are used in conjunc
   - Takeoff - A Boot enchantment that allows you to take no damage from your own Firework Rockets. Incompatible with Feather Falling
   - Air Strike - A Crossbow enchantment that makes it slower to reload on the ground, but while rocket jumping, it can rapidly reload and fire the Crossbow. Incompatible with Quick Charge
   - Fixed Fuse - A Crossbow enchantment that gives Firework Rockets shot from it a fixed fuse time, allowing skilled players to do mid-air jumps with precise timing. Incompatible with Multishot
-- Optional compat with [Explosive Enhancement](https://www.modrinth.com/mod/explosive-enhancement), allowing for fancier explosion particles when a Firework Star is replaced with a Fire Charge
+- Optional compat with [Explosive Enhancement](https://www.modrinth.com/mod/OSQ8mw2r), allowing for fancier explosion particles when a Firework Star is replaced with a Fire Charge
 </details>
 
 ---
@@ -46,7 +41,7 @@ Firework Frenzy is a mod that overhauls how Firework Rockets are used in conjunc
         <th><b>Join my Ko-Fi!</b></th>
     </tr>
     <tr>
-        <th><a href="https://discord.gg/f5dFYWX"><img src="https://cammiescorner.dev/images/extras/discord.png" width="150" height="150" title="Cammie's Corner Discord" alt="Cammie's Corner Discord"></a></th>
+        <th><a href="https://cammiescorner.dev/discord"><img src="https://cammiescorner.dev/images/extras/discord.png" width="150" height="150" title="Cammie's Corner Discord" alt="Cammie's Corner Discord"></a></th>
         <th><a href="https://www.ko-fi.com/camellias_"><img src="https://cammiescorner.dev/images/extras/kofi.png" width="150" height="150" title="Cammie's Corner Ko-Fi" alt="Cammie's Corner Ko-Fi"></a></th>
     </tr>
 </table>
