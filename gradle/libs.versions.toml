@@ -14,7 +14,7 @@ fabric_api = "0.92.2+1.20.1"
 
 cca = "5.2.3"
 emi = "1.1.18+1.20.1"
-explosiveenhancement = "1.2.2-1.20.x"
+explosiveenhancement = "t5vUyiRo" # 1.3.2-1.20-1.20.4
 jei = "15.20.0.106"
 modmenu = "7.2.2"
 resourceful_config = "2.1.2"
