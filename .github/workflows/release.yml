@@ -60,6 +60,7 @@ jobs:
             -   name: Notify Discord
                 uses: Up-Mods/action-discord-release@main
                 with:
+                    project-name: Firework Frenzy
                     version: ${{ env.TAG }}
                     webhook-url: ${{ secrets.ANNOUNCEMENT_WEBHOOK_URL }}
                     curseforge-project-id: ${{ steps.publish_fabric.outputs.curseforge-id }}
