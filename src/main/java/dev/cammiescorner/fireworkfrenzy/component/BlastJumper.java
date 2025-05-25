@@ -1,10 +1,9 @@
 package dev.cammiescorner.fireworkfrenzy.component;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import net.minecraft.world.entity.Entity;
+import org.ladysnake.cca.api.v3.component.Component;
 
 public interface BlastJumper extends Component {
-
 	Entity getEntity();
 
 	boolean isBlastJumping();

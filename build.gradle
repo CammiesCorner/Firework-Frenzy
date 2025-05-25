@@ -59,6 +59,9 @@ dependencies {
 	})
 
 	compileOnly libs.jetbrains.annotations
+	compileOnly libs.autoservice.annotations
+
+	annotationProcessor libs.autoservice
 
 	modImplementation libs.fabric.loader
 	modImplementation libs.fabric.api

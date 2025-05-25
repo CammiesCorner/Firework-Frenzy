@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
-
 	private PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
 		super(entityType, level);
 		throw new UnsupportedOperationException();
@@ -20,9 +19,8 @@ public abstract class PlayerMixin extends LivingEntity {
 
 	@ModifyReturnValue(method = "getFlyingSpeed", at = @At("RETURN"))
 	public float fireworkfrenzy$airSpeed(float original) {
-		if(this.getComponent(FireworkFrenzyComponents.BLAST_JUMPER).isBlastJumping()) {
+		if(this.getComponent(FireworkFrenzyComponents.BLAST_JUMPER).isBlastJumping())
 			return original * FireworkFrenzyConfig.airStrafeSpeedMultiplier;
-		}
 
 		return original;
 	}

@@ -4,22 +4,21 @@ import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
 import dev.cammiescorner.fireworkfrenzy.client.FireworkFrenzyClient;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.component.tick.CommonTickingComponent;
+import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, ServerTickingComponent, CommonTickingComponent {
-
 	private static final int MAX_TIME_ON_GROUND = 100;
-
 	private final Player player;
 	private boolean blastJumping = false;
 	private int timeOnGround = 0;
@@ -42,11 +41,12 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 	@Override
 	public void setBlastJumping(boolean blastJumping) {
 		this.blastJumping = blastJumping;
+
 		if(blastJumping) {
 			consecutiveJumps++;
-			if(player instanceof ServerPlayer serverPlayer) {
+
+			if(player instanceof ServerPlayer serverPlayer)
 				FireworkFrenzyCriteriaTriggers.CONSECUTIVE_BLAST_JUMPS.trigger(serverPlayer, consecutiveJumps);
-			}
 		}
 	}
 
@@ -62,22 +62,22 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void applySyncPacket(FriendlyByteBuf buf) {
+	public void applySyncPacket(RegistryFriendlyByteBuf buf) {
 		var previous = isBlastJumping();
 		AutoSyncedComponent.super.applySyncPacket(buf);
-		if(!previous && isBlastJumping() && player.level().isClientSide()) {
+
+		if(!previous && isBlastJumping() && player.level().isClientSide())
 			FireworkFrenzyClient.playBlastSound(player);
-		}
 	}
 
 	@Override
-	public void readFromNbt(CompoundTag tag) {
+	public void readFromNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
 		blastJumping = tag.getBoolean("blastJumping");
 		timeOnGround = tag.getInt("timeOnGround");
 	}
 
 	@Override
-	public void writeToNbt(CompoundTag tag) {
+	public void writeToNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
 		tag.putBoolean("blastJumping", blastJumping);
 		tag.putInt("timeOnGround", timeOnGround);
 	}
@@ -87,6 +87,7 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 		if(isBlastJumping()) {
 			if(player.onGround() || player.isUnderWater()) {
 				setTimeOnGround(timeOnGround + 1);
+
 				if(this.consecutiveJumps > 0) {
 					this.consecutiveJumps = 0;
 					sync();

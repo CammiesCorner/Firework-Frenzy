@@ -9,7 +9,6 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class FireworkFrenzyDamageTypes {
-
 	public static final ResourceKey<DamageType> DAMAGE_CLOUD = ResourceKey.create(Registries.DAMAGE_TYPE, FireworkFrenzy.id("damage_cloud"));
 
 	public static DamageSource getDamageCloudDamage(Entity direct, @Nullable Entity trueSource) {

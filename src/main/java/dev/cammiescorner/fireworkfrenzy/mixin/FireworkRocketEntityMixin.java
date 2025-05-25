@@ -54,6 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+// TODO this whole mixin
 @Mixin(FireworkRocketEntity.class)
 public abstract class FireworkRocketEntityMixin extends Projectile implements ItemSupplier {
 	@Shadow @Final private static EntityDataAccessor<ItemStack> DATA_ID_FIREWORKS_ITEM;
@@ -74,7 +75,7 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 	void fireworkfrenzy$noRandomFuse(Level level, double x, double y, double z, ItemStack stack, CallbackInfo ci, int i) {
 		setDeltaMovement(0.0D, 0.05D, 0.0D);
 
-		if(EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.FIXED_FUSE.get(), entityData.get(DATA_ID_FIREWORKS_ITEM)) > 0) {
+		if(EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.FIXED_FUSE.holder(), entityData.get(DATA_ID_FIREWORKS_ITEM)) > 0) {
 			lifetime = 10 * i + 6;
 		}
 	}
@@ -149,12 +150,12 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 					}
 
 					// calculate air strike damage
-					if(EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.AIR_STRIKE.get(), stack) > 0 && owner != null && FireworkFrenzyComponents.BLAST_JUMPER.maybeGet(owner).map(BlastJumper::isBlastJumping).orElse(false)) {
+					if(EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.AIR_STRIKE.holder(), stack) > 0 && owner != null && FireworkFrenzyComponents.BLAST_JUMPER.maybeGet(owner).map(BlastJumper::isBlastJumping).orElse(false)) {
 						fireworkDamage *= FireworkFrenzyConfig.airStrikeDamageMultiplier;
 					}
 
 					// remove damage from owner if wearing takeoff boots
-					if(target == owner && EnchantmentHelper.getEnchantmentLevel(FireworkFrenzyEnchantments.TAKEOFF.get(), target) > 0) {
+					if(target == owner && EnchantmentHelper.getEnchantmentLevel(FireworkFrenzyEnchantments.TAKEOFF.holder(), target) > 0) {
 						fireworkDamage = 0;
 					}
 

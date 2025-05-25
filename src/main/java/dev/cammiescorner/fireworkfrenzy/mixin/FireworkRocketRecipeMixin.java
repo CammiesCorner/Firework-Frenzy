@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+// TODO this whole mixin
 @Mixin(FireworkRocketRecipe.class)
 public abstract class FireworkRocketRecipeMixin extends CustomRecipe {
 

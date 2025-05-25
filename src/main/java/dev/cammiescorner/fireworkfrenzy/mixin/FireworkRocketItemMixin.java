@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
+// TODO this whole mixin
 @Mixin(FireworkRocketItem.class)
 public abstract class FireworkRocketItemMixin extends Item {
 	public FireworkRocketItemMixin(Properties properties) {

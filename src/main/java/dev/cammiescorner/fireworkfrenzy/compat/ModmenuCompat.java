@@ -8,7 +8,6 @@ import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
 import org.jetbrains.annotations.Nullable;
 
 public class ModmenuCompat implements ModMenuApi {
-
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parent -> {

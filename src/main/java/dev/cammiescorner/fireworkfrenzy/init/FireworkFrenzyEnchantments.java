@@ -10,7 +10,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 public class FireworkFrenzyEnchantments {
-
 	public static final RegistryHandler<Enchantment> ENCHANTMENTS = RegistryHandler.create(Registries.ENCHANTMENT, FireworkFrenzy.MOD_ID);
 
 	public static final RegistrySupplier<Enchantment> AIR_STRIKE = ENCHANTMENTS.register("air_strike", AirStrikeEnchantment::new);

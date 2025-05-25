@@ -13,11 +13,9 @@ public class DamageCloudEntity extends AreaEffectCloud {
 	public void tick() {
 		super.tick();
 
-		for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox())) {
-			if (tickCount % 10 == 0) {
-				target.hurt(FireworkFrenzyDamageTypes.getDamageCloudDamage(this, getOwner()), 4.0F);
-			}
-		}
+		for(LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox()))
+			if(tickCount % 10 == 0)
+				target.hurt(FireworkFrenzyDamageTypes.getDamageCloudDamage(this, getOwner()), 4f);
 	}
 
 	@Override

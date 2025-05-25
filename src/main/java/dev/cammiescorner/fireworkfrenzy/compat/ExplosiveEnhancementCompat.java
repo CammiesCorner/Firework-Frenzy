@@ -17,6 +17,6 @@ public class ExplosiveEnhancementCompat {
 		var type = ExplosiveApi.determineParticleType(level, new Vec3(x, y, z), ParticleTypes.EXPLOSION);
 		ExplosiveApi.spawnParticles(level, x, y, z, power, type, false, true);
 
-		level.playLocalSound(x, y, z, SoundEvents.GENERIC_EXPLODE, SoundSource.NEUTRAL, 4.0F, (1.0F + (level.random.nextFloat() - level.random.nextFloat()) * 0.2F) * 0.7F, false);
+		level.playLocalSound(x, y, z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.NEUTRAL, 4.0F, (1.0F + (level.random.nextFloat() - level.random.nextFloat()) * 0.2F) * 0.7F, false);
 	}
 }
