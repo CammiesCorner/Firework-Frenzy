@@ -18,7 +18,7 @@ public abstract class PlayerMixin extends LivingEntity {
 	}
 
 	@ModifyReturnValue(method = "getFlyingSpeed", at = @At("RETURN"))
-	public float fireworkfrenzy$airSpeed(float original) {
+	public float airSpeed(float original) {
 		if(this.getComponent(FireworkFrenzyComponents.BLAST_JUMPER).isBlastJumping())
 			return original * FireworkFrenzyConfig.airStrafeSpeedMultiplier;
 

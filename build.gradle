@@ -7,7 +7,7 @@ plugins {
 def ENV = System.getenv()
 def buildTime = ENV.BUILD_TIME ?: new Date().format("yyyyMMddHHmmss")
 
-def javaVersion = 17
+def javaVersion = 21
 
 group = project.maven_group_id
 

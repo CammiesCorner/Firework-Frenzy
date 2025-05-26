@@ -6,9 +6,7 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 @Config(FireworkFrenzy.MOD_ID)
 public final class FireworkFrenzyConfig {
 	@ConfigEntry(id = "crossbow_charge_time", translation = "config.fireworkfrenzy.crossbow_charge_time")
-	public static int crossbowChargeTime = 20;
-	@ConfigEntry(id = "quick_charge_modifier", translation = "config.fireworkfrenzy.quick_charge_modifier")
-	public static int quickChargeModifier = 3;
+	public static int crossbowChargeTime = 16;
 
 	@ConfigEntry(id = "airstrike_jumping_charge_time", translation = "config.fireworkfrenzy.airstrike_jumping_charge_time")
 	public static int airStrikeJumpingChargeTime = 2;
@@ -39,10 +37,6 @@ public final class FireworkFrenzyConfig {
 	@ConfigEntry(id = "boost_cancels_rocket_jumping", translation = "config.fireworkfrenzy.boost_cancels_rocket_jumping")
 	public static boolean boostCancelsRocketJumping = true;
 
-	@ConfigEntry(id = "crossbow_allow_infinity_enchantment", translation = "config.fireworkfrenzy.crossbow_allow_infinity_enchantment")
-	public static boolean crossbowAllowInfinityEnchantment = true;
-	@ConfigEntry(id = "infinity_enchantment_affects_rockets", translation = "config.fireworkfrenzy.infinity_enchantment_affects_rockets")
-	public static boolean infinityEnchantmentAffectsRockets = true;
 	@ConfigEntry(id = "crossbow_use_rockets_from_inventory", translation = "config.fireworkfrenzy.crossbow_use_rockets_from_inventory")
 	public static boolean crossbowUseRocketsFromInventory = true;
 

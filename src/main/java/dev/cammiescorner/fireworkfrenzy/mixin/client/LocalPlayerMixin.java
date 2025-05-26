@@ -17,7 +17,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isUsingItem()Z"))
-	public boolean fireworkfrenzy$noSlowDownWhileRocketJumping(boolean original) {
+	public boolean noSlowDownWhileRocketJumping(boolean original) {
 		return original && !this.getComponent(FireworkFrenzyComponents.BLAST_JUMPER).isBlastJumping();
 	}
 }

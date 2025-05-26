@@ -2,7 +2,7 @@ package dev.cammiescorner.fireworkfrenzy;
 
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
-import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEnchantments;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyDataComponents;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEntityTypes;
 import dev.upcraft.sparkweave.api.logging.SparkweaveLoggerFactory;
 import dev.upcraft.sparkweave.api.platform.services.RegistryService;
@@ -20,7 +20,8 @@ public class FireworkFrenzy implements ModInitializer {
 		CONFIGURATOR.register(FireworkFrenzyConfig.class);
 
 		var registryService = RegistryService.get();
-		FireworkFrenzyEnchantments.ENCHANTMENTS.accept(registryService);
+		FireworkFrenzyDataComponents.DATA_COMPONENTS.accept(registryService);
+//		FireworkFrenzyEnchantments.ENCHANTMENTS.accept(registryService);
 		FireworkFrenzyEntityTypes.ENTITY_TYPES.accept(registryService);
 
 		FireworkFrenzyCriteriaTriggers.register();

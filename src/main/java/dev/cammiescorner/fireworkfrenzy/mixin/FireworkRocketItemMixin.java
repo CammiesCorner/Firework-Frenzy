@@ -2,9 +2,8 @@ package dev.cammiescorner.fireworkfrenzy.mixin;
 
 import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyDataComponents;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -13,8 +12,8 @@ import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
-// TODO this whole mixin
 @Mixin(FireworkRocketItem.class)
 public abstract class FireworkRocketItemMixin extends Item {
 	public FireworkRocketItemMixin(Properties properties) {
@@ -43,30 +41,25 @@ public abstract class FireworkRocketItemMixin extends Item {
 		}
 	}
 
-	@Inject(method = "appendHoverText", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/ListTag;isEmpty()Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
-	public void addTooltip(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced, CallbackInfo ci, CompoundTag compoundTag, ListTag listTag) {
-		if (FireworkFrenzyConfig.showFireworkDamageTooltip) {
-			var hasFireball = compoundTag.getBoolean("Fireball");
-			float mobDamage = 0.0F;
-			float playerDamage = 0.0F;
-			if (!listTag.isEmpty()) {
-				mobDamage += FireworkFrenzyConfig.mobDamage * listTag.size();
-				playerDamage += FireworkFrenzyConfig.playerDamage * listTag.size();
-			}
+	@Inject(method = "appendHoverText", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/Fireworks;addToTooltip(Lnet/minecraft/world/item/Item$TooltipContext;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
+	public void addTooltip(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag, CallbackInfo ci, Fireworks fireworks) {
+		if(FireworkFrenzyConfig.showFireworkDamageTooltip) {
+			var hasFireball = stack.getOrDefault(FireworkFrenzyDataComponents.FIREBALL.get(), false);
+			float mobDamage = FireworkFrenzyConfig.mobDamage * fireworks.explosions().size();
+			float playerDamage = FireworkFrenzyConfig.playerDamage * fireworks.explosions().size();
 
-			if (hasFireball) {
+			if(hasFireball) {
 				mobDamage += FireworkFrenzyConfig.fireballDamageBonus;
 				playerDamage += FireworkFrenzyConfig.fireballDamageBonus;
 			}
 
-			tooltipComponents.add(Component.translatable("tooltip.fireworkfrenzy.rocket_damage_base", ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(mobDamage)).withStyle(ChatFormatting.GRAY));
-			if (FireworkFrenzyConfig.mobDamage != FireworkFrenzyConfig.playerDamage) {
-				tooltipComponents.add(Component.translatable("tooltip.fireworkfrenzy.rocket_damage_players", ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(playerDamage)).withStyle(ChatFormatting.GRAY));
-			}
+			tooltipComponents.add(Component.translatable("tooltip.fireworkfrenzy.rocket_damage_base", mobDamage).withStyle(ChatFormatting.GRAY));
 
-			if(hasFireball) {
+			if(FireworkFrenzyConfig.mobDamage != FireworkFrenzyConfig.playerDamage)
+				tooltipComponents.add(Component.translatable("tooltip.fireworkfrenzy.rocket_damage_players", playerDamage).withStyle(ChatFormatting.GRAY));
+
+			if(hasFireball)
 				tooltipComponents.add(Component.translatable("tooltip.fireworkfrenzy.rocket_has_fireball").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC));
-			}
 		}
 	}
 }

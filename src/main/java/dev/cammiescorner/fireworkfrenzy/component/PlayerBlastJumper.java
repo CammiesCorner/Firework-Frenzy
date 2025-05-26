@@ -3,13 +3,11 @@ package dev.cammiescorner.fireworkfrenzy.component;
 import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
 import dev.cammiescorner.fireworkfrenzy.client.FireworkFrenzyClient;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents;
-import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -45,8 +43,9 @@ public class PlayerBlastJumper implements BlastJumper, AutoSyncedComponent, Serv
 		if(blastJumping) {
 			consecutiveJumps++;
 
-			if(player instanceof ServerPlayer serverPlayer)
-				FireworkFrenzyCriteriaTriggers.CONSECUTIVE_BLAST_JUMPS.trigger(serverPlayer, consecutiveJumps);
+			// TODO more advancement triggers yay
+//			if(player instanceof ServerPlayer serverPlayer)
+//				FireworkFrenzyCriteriaTriggers.CONSECUTIVE_BLAST_JUMPS.trigger(serverPlayer, consecutiveJumps);
 		}
 	}
 
