@@ -54,15 +54,7 @@ public class FireworkFrenzyEnchantmentProvider extends SparkweaveEnchantmentProv
 				8,
 				EquipmentSlotGroup.FEET
 			))
-			.exclusiveWith(enchantments.getOrThrow(FireworkFrenzyTags.Enchantments.TAKEOFF_EXCLUSIVE_WITH))
-			// FIXME convert manual check in mixin to enchantment effect condition
-//				.withEffect(EnchantmentEffectComponents.DAMAGE_IMMUNITY, new DamageImmunity(), DamageSourceCondition.hasDamageSource(DamageSourcePredicate.Builder.damageType()
-//					.isDirect(false)
-//					.tag(TagPredicate.is(FireworkFrenzyTags.DamageTypes.IS_FIREWORK))
-//					.direct(EntityPredicate.Builder.entity().entityType(EntityTypePredicate.of(EntityType.FIREWORK_ROCKET)))
-//					.source(EntityPredicate.Builder.entity().targetedEntity(EntityPredicate.Builder.entity()))
-//				))
-			,
+			.exclusiveWith(enchantments.getOrThrow(FireworkFrenzyTags.Enchantments.TAKEOFF_EXCLUSIVE_WITH)),
 			"Takeoff",
 			"Removes self-damage from your own rockets"
 		);

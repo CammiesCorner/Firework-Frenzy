@@ -141,18 +141,17 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 					if(getWeaponItem() != null && FireworkFrenzyEnchantments.hasAirStrike(registryAccess(), getWeaponItem()) && owner != null && FireworkFrenzyComponents.BLAST_JUMPER.maybeGet(owner).map(BlastJumper::isBlastJumping).orElse(false))
 						fireworkDamage *= FireworkFrenzyConfig.airStrikeDamageMultiplier;
 
-					// TODO convert manaul check to to enchantment effect condition
-					// remove damage from owner if wearing takeoff boots
-					if(target == owner && EnchantmentHelper.getEnchantmentLevel(registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(FireworkFrenzyEnchantments.TAKEOFF), target) > 0)
-						fireworkDamage = 0;
+					// don't affect owner if wearing takeoff boots
+					if(target != owner || EnchantmentHelper.getEnchantmentLevel(registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(FireworkFrenzyEnchantments.TAKEOFF), target) == 0) {
+						if(glowingDuration.get() > 0)
+							target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowingDuration.get(), 0, false, false));
 
-					if(glowingDuration.get() > 0)
-						target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowingDuration.get(), 0, false, false));
+						// calculate damage fall-off
+						if(target != directTarget)
+							fireworkDamage = Math.max(1.0F, fireworkDamage / (float) distance);
 
-					if(target == directTarget)
 						target.hurt(source, fireworkDamage);
-					else
-						target.hurt(source, (float) Math.max(1, fireworkDamage / distance));
+					}
 
 					if(FireworkFrenzyConfig.allowRocketJumping) {
 						double multiplier = ((list.size() + (getItem().getOrDefault(FireworkFrenzyDataComponents.FIREBALL.get(), false) ? 1 : 0)) * 0.3) * knockbackAmount.get() * (target == owner ? FireworkFrenzyConfig.rocketJumpKnockbackMultiplier : FireworkFrenzyConfig.defaultKnockbackMultiplier);
