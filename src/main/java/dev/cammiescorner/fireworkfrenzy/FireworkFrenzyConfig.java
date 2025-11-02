@@ -4,7 +4,7 @@ import com.teamresourceful.resourcefulconfig.api.annotations.Config;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 
 @Config(FireworkFrenzy.MOD_ID)
-public final class FireworkFrenzyConfig {
+public class FireworkFrenzyConfig {
 	@ConfigEntry(id = "crossbow_charge_time", translation = "config.fireworkfrenzy.crossbow_charge_time")
 	public static int crossbowChargeTime = 16;
 

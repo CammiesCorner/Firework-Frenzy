@@ -85,7 +85,10 @@ dependencies {
 }
 
 fabricApi {
-	configureDataGeneration()
+	configureDataGeneration {
+		client = true
+		strictValidation = true
+	}
 }
 
 loom {
@@ -114,6 +117,10 @@ loom {
 			if (project.hasProperty('mc_java_agent_path')) {
 				vmArg("-javaagent:${project.findProperty('mc_java_agent_path')}")
 			}
+		}
+
+		datagen {
+			property("sparkweave.datagen.mods", mod_id)
 		}
 	}
 }

@@ -1,29 +1,33 @@
 package dev.cammiescorner.fireworkfrenzy.datagen.client;
 
+import dev.cammiescorner.fireworkfrenzy.data.FireworkFrenzyAdvancements;
+import dev.cammiescorner.fireworkfrenzy.data.FireworkFrenzyDamageTypes;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEntityTypes;
 import dev.upcraft.sparkweave.api.datagen.ContextAwarePackOutput;
 import dev.upcraft.sparkweave.api.datagen.TranslationBuilder;
 import dev.upcraft.sparkweave.api.datagen.provider.SparkweaveLanguageProvider;
+import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.locale.Language;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class FireworkFrenzyEnglishLanguageProvider extends SparkweaveLanguageProvider {
-	public FireworkFrenzyEnglishLanguageProvider(ContextAwarePackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture, String languageCode) {
-		super(output, registriesFuture, languageCode);
+
+	public FireworkFrenzyEnglishLanguageProvider(ContextAwarePackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+		super(output, registriesFuture, Language.DEFAULT);
 	}
 
 	@Override
 	public void generateTranslations(HolderLookup.Provider registries, TranslationBuilder builder) {
-		// TODO do advancements and enchantments
-//		advancement(builder, FireworkFrenzyAdvancements.SONIC_BOOM, "Sonic Boom", "Through blast jumping, accelerate to the speed of sound (...or thereabouts)");
-//		advancement(builder, FireworkFrenzyAdvancements.THE_FLOOR_IS_LAVA, "The floor is Lava", "Perform 6 consecutive blast jumps without touching the ground");
-//
-//		damageType(builder, FireworkFrenzyDamageTypes.DAMAGE_CLOUD, "%s got blown up", "%s got blown up by %s", "%s got blown up by %s using %s");
-//
-//		enchantment(builder, FireworkFrenzyEnchantments.AIR_STRIKE, "Air Strike", "Decreases the Crossbow charge time while rocket jumping");
-//		enchantment(builder, FireworkFrenzyEnchantments.FIXED_FUSE, "Fixed Fuse", "Removes the random fuse timer from Firework Rockets, allowing for mid-air jumps");
-//		enchantment(builder, FireworkFrenzyEnchantments.TAKEOFF, "Takeoff", "Removes self-damage from your own rockets");
+		advancement(builder, FireworkFrenzyAdvancements.SONIC_BOOM, "Sonic Boom", "Through blast jumping, accelerate to the speed of sound (...or thereabouts)");
+		advancement(builder, FireworkFrenzyAdvancements.THE_FLOOR_IS_LAVA, "The floor is Lava", "Perform 6 consecutive blast jumps without touching the ground");
+
+		damageType(builder, FireworkFrenzyDamageTypes.DAMAGE_CLOUD, "%s got blown up", "%s got blown up by %s", "%s got blown up by %s using %s");
 
 		builder.entity(FireworkFrenzyEntityTypes.DAMAGE_CLOUD, "Damage Cloud");
 
@@ -54,5 +58,27 @@ public class FireworkFrenzyEnglishLanguageProvider extends SparkweaveLanguagePro
 		builder.add("config.fireworkfrenzy.rocket_damage_falloff_min_multiplier", "Minimum percentage of damage dealt at maximum falloff");
 		builder.add("config.fireworkfrenzy.rocket_damage_falloff_start_distance", "Minimum distance away for damage falloff to apply");
 		builder.add("config.fireworkfrenzy.show_firework_damage_tooltip", "Show damage tooltip for Firework Rocket items");
+	}
+
+	private static void damageType(TranslationBuilder builder, ResourceKey<DamageType> damageType, String message, @Nullable String killedByPlayer, @Nullable String killedWithItem) {
+		var baseKey = Util.makeDescriptionId("death.attack", damageType.location());
+		builder.add(baseKey, message);
+
+		if(killedByPlayer != null) {
+			builder.add(baseKey + ".player", killedByPlayer);
+		}
+
+		if(killedWithItem != null) {
+			builder.add(baseKey + ".item", killedWithItem);
+		}
+	}
+
+	private static void advancement(TranslationBuilder builder, ResourceLocation advancementId, String title, @Nullable String description) {
+		var prefix = Util.makeDescriptionId("advancements", advancementId);
+
+		builder.add(prefix + ".title", title);
+		if(description != null) {
+			builder.add(prefix + ".description", description);
+		}
 	}
 }

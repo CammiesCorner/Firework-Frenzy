@@ -9,16 +9,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "translate": "advancements.fireworkfrenzy.adventure.sonic_boom.description"
     },
     "frame": "challenge",
-    "hidden": false,
     "icon": {
-      "item": "minecraft:firework_rocket"
+      "count": 1,
+      "id": "minecraft:firework_rocket"
     },
-    "show_toast": true,
     "title": {
       "translate": "advancements.fireworkfrenzy.adventure.sonic_boom.title"
     }

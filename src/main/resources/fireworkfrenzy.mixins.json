@@ -10,7 +10,8 @@
     "FireworkRocketItemMixin",
     "FireworkRocketRecipeMixin",
     "LivingEntityMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "datagen.AdvancementBuilderMixin"
   ],
   "client": [
     "client.LocalPlayerMixin"

@@ -1,42 +1,38 @@
 package dev.cammiescorner.fireworkfrenzy.advancement.criterion;
 
-// TODO im leaving the advancement triggers to lopa
-public class MultiJumpTrigger {//extends SimpleCriterionTrigger<MultiJumpTrigger.TriggerInstance> {
-//	public static final ResourceLocation ID = FireworkFrenzy.id("consecutive_blast_jumps");
-//
-//	@Override
-//	protected TriggerInstance createInstance(JsonObject json, ContextAwarePredicate predicate, DeserializationContext deserializationContext) {
-//		int consecutiveJumps = GsonHelper.getAsInt(json, "jumps");
-//		return new TriggerInstance(predicate, consecutiveJumps);
-//	}
-//
-//	public void trigger(ServerPlayer player, int totalJumps) {
-//		this.trigger(player, triggerInstance -> totalJumps >= triggerInstance.consecutiveJumps);
-//	}
-//
-//	@Override
-//	public ResourceLocation getId() {
-//		return ID;
-//	}
-//
-//	public static class TriggerInstance extends AbstractCriterionTriggerInstance {
-//
-//		private final int consecutiveJumps;
-//
-//		public TriggerInstance(ContextAwarePredicate player, int consecutiveJumps) {
-//			super(ID, player);
-//			this.consecutiveJumps = consecutiveJumps;
-//		}
-//
-//		public static TriggerInstance hasConsecutiveJumps(int consecutiveJumps) {
-//			return new TriggerInstance(ContextAwarePredicate.ANY, consecutiveJumps);
-//		}
-//
-//		@Override
-//		public JsonObject serializeToJson(SerializationContext context) {
-//			var json = super.serializeToJson(context);
-//			json.addProperty("jumps", this.consecutiveJumps);
-//			return json;
-//		}
-//	}
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ExtraCodecs;
+
+import java.util.Optional;
+
+public class MultiJumpTrigger extends SimpleCriterionTrigger<MultiJumpTrigger.TriggerInstance> {
+
+	public void trigger(ServerPlayer player, int totalJumps) {
+		this.trigger(player, triggerInstance -> totalJumps >= triggerInstance.consecutiveJumps);
+	}
+
+	@Override
+	public Codec<TriggerInstance> codec() {
+		return TriggerInstance.CODEC;
+	}
+
+
+	public record TriggerInstance(Optional<ContextAwarePredicate> player, int consecutiveJumps) implements SimpleInstance {
+
+		public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+			ExtraCodecs.NON_NEGATIVE_INT.fieldOf("jumps").forGetter(TriggerInstance::consecutiveJumps)
+		).apply(instance, TriggerInstance::new));
+
+		public static Criterion<TriggerInstance> hasConsecutiveJumps(int consecutiveJumps) {
+			return FireworkFrenzyCriteriaTriggers.CONSECUTIVE_BLAST_JUMPS.get().createCriterion(new TriggerInstance(Optional.empty(), consecutiveJumps));
+		}
+	}
 }

@@ -8,14 +8,19 @@ import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
 import dev.cammiescorner.fireworkfrenzy.compat.ExplosiveEnhancementCompat;
 import dev.cammiescorner.fireworkfrenzy.compat.FireworkFrenzyCompat;
+import dev.cammiescorner.fireworkfrenzy.component.BlastJumper;
+import dev.cammiescorner.fireworkfrenzy.data.FireworkFrenzyEnchantments;
 import dev.cammiescorner.fireworkfrenzy.entities.DamageCloudEntity;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents;
+import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyCriteriaTriggers;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyDataComponents;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEntityTypes;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -31,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -71,9 +77,8 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 	void noRandomFuse(Level level, double x, double y, double z, ItemStack stack, CallbackInfo ci, int i) {
 		setDeltaMovement(0.0D, 0.05D, 0.0D);
 
-		// TODO enchantment shenanigans yay
-//		if(EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.FIXED_FUSE.holder(), entityData.get(DATA_ID_FIREWORKS_ITEM)) > 0)
-//			lifetime = 10 * i + 6;
+		if(FireworkFrenzyEnchantments.hasFixedFuse(registryAccess(), entityData.get(DATA_ID_FIREWORKS_ITEM)))
+			lifetime = 10 * i + 6;
 	}
 
 	@ModifyArg(method = "dealExplosionDamage", at = @At(value = "INVOKE",
@@ -132,15 +137,14 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 					if(FireworkFrenzyConfig.rocketsHaveDamageFalloff && owner != null)
 						fireworkDamage = Math.max(FireworkFrenzyConfig.minFalloffMultiplier * fireworkDamage, fireworkDamage - Math.max(0, this.distanceTo(owner) - FireworkFrenzyConfig.rocketDamageFalloffStartDistance) * FireworkFrenzyConfig.rocketDamageFalloffPerMeter);
 
-					// TODO enchantment shenanigans
 					// calculate air strike damage
-//					if(getWeaponItem() != null && EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.AIR_STRIKE.holder(), getWeaponItem()) > 0 && owner != null && FireworkFrenzyComponents.BLAST_JUMPER.maybeGet(owner).map(BlastJumper::isBlastJumping).orElse(false))
-//						fireworkDamage *= FireworkFrenzyConfig.airStrikeDamageMultiplier;
+					if(getWeaponItem() != null && FireworkFrenzyEnchantments.hasAirStrike(registryAccess(), getWeaponItem()) && owner != null && FireworkFrenzyComponents.BLAST_JUMPER.maybeGet(owner).map(BlastJumper::isBlastJumping).orElse(false))
+						fireworkDamage *= FireworkFrenzyConfig.airStrikeDamageMultiplier;
 
-					// TODO enchantment shenanigans
+					// TODO convert manaul check to to enchantment effect condition
 					// remove damage from owner if wearing takeoff boots
-//					if(target == owner && EnchantmentHelper.getEnchantmentLevel(FireworkFrenzyEnchantments.TAKEOFF.holder(), target) > 0)
-//						fireworkDamage = 0;
+					if(target == owner && EnchantmentHelper.getEnchantmentLevel(registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(FireworkFrenzyEnchantments.TAKEOFF), target) > 0)
+						fireworkDamage = 0;
 
 					if(glowingDuration.get() > 0)
 						target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowingDuration.get(), 0, false, false));
@@ -158,9 +162,8 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 						target.setDeltaMovement(targetVelocity);
 						target.hurtMarked = true;
 
-						// TODO more advancement triggers yay
-//						if(target instanceof ServerPlayer serverPlayer)
-//							FireworkFrenzyCriteriaTriggers.BLAST_JUMP.trigger(serverPlayer, targetVelocity.length());
+						if(target instanceof ServerPlayer serverPlayer)
+							FireworkFrenzyCriteriaTriggers.BLAST_JUMP.get().trigger(serverPlayer, targetVelocity.length());
 					}
 				}
 			}

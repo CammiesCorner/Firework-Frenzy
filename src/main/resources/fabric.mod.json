@@ -45,7 +45,12 @@
     },
     "cardinal-components": [
       "${mod_id}:blast_jumper"
-    ]
+    ],
+    "loom:injected_interfaces": {
+      "net/minecraft/class_161\u0024class_162": [
+        "dev/cammiescorner/fireworkfrenzy/datagen/ext/AdvancementBuilderExt"
+      ]
+    }
   },
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
@@ -58,20 +63,8 @@
     "cardinal-components-entity": "*"
   },
   "entrypoints": {
-    "main": [
-      "dev.cammiescorner.fireworkfrenzy.FireworkFrenzy"
-    ],
-    "client": [
-      "dev.cammiescorner.fireworkfrenzy.client.FireworkFrenzyClient"
-    ],
-    "fabric-datagen": [
-      "dev.cammiescorner.fireworkfrenzy.datagen.FireworkFrenzyDatagenerator"
-    ],
     "cardinal-components": [
       "dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents"
-    ],
-    "modmenu": [
-      "dev.cammiescorner.fireworkfrenzy.compat.ModmenuCompat"
     ]
   },
   "mixins": [
