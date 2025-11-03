@@ -3,6 +3,32 @@
   "description": {
     "translate": "enchantment.fireworkfrenzy.takeoff"
   },
+  "effects": {
+    "minecraft:damage_immunity": [
+      {
+        "effect": {},
+        "requirements": {
+          "condition": "minecraft:damage_source_properties",
+          "predicate": {
+            "is_direct": false,
+            "source_entity": {
+              "distance": {
+                "absolute": {
+                  "max": 9.999999747378752E-6
+                }
+              }
+            },
+            "tags": [
+              {
+                "expected": true,
+                "id": "fireworkfrenzy:is_firework"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
   "exclusive_set": "#fireworkfrenzy:exclusive_set/takeoff",
   "max_cost": {
     "base": 60,

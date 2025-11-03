@@ -18,7 +18,6 @@ import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEntityTypes;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -36,7 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -141,16 +139,17 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 					if(getWeaponItem() != null && FireworkFrenzyEnchantments.hasAirStrike(registryAccess(), getWeaponItem()) && owner != null && FireworkFrenzyComponents.BLAST_JUMPER.maybeGet(owner).map(BlastJumper::isBlastJumping).orElse(false))
 						fireworkDamage *= FireworkFrenzyConfig.airStrikeDamageMultiplier;
 
-					// don't affect owner if wearing takeoff boots
-					if(target != owner || EnchantmentHelper.getEnchantmentLevel(registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(FireworkFrenzyEnchantments.TAKEOFF), target) == 0) {
-						if(glowingDuration.get() > 0)
-							target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowingDuration.get(), 0, false, false));
+					// calculate damage fall-off
+					if(target != directTarget) {
+						fireworkDamage = Math.max(1.0F, fireworkDamage / (float) distance);
+					}
 
-						// calculate damage fall-off
-						if(target != directTarget)
-							fireworkDamage = Math.max(1.0F, fireworkDamage / (float) distance);
+					// deal damage
+					var result = target.hurt(source, fireworkDamage);
 
-						target.hurt(source, fireworkDamage);
+					// apply glowing effect
+					if(result && glowingDuration.get() > 0) {
+						target.addEffect(new MobEffectInstance(MobEffects.GLOWING, glowingDuration.get(), 0, false, false));
 					}
 
 					if(FireworkFrenzyConfig.allowRocketJumping) {
@@ -161,8 +160,9 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 						target.setDeltaMovement(targetVelocity);
 						target.hurtMarked = true;
 
-						if(target instanceof ServerPlayer serverPlayer)
+						if(target instanceof ServerPlayer serverPlayer) {
 							FireworkFrenzyCriteriaTriggers.BLAST_JUMP.get().trigger(serverPlayer, targetVelocity.length());
+						}
 					}
 				}
 			}

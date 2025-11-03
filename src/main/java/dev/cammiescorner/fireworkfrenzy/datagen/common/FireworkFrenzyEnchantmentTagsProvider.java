@@ -18,7 +18,7 @@ public class FireworkFrenzyEnchantmentTagsProvider extends FabricTagProvider<Enc
 		super(fabricOutput, Registries.ENCHANTMENT, registriesFuture);
 	}
 
-	// TODO trades/* tags?
+	// TODO trades/* tags (only for trading rework)
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
 		getOrCreateTagBuilder(EnchantmentTags.NON_TREASURE)

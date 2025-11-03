@@ -16,5 +16,4 @@ public class FireworkFrenzyTags {
 		public static final TagKey<Enchantment> FIXED_FUSE_EXCLUSIVE_WITH = TagKey.create(Registries.ENCHANTMENT, FireworkFrenzy.id("exclusive_set/fixed_fuse"));
 		public static final TagKey<Enchantment> TAKEOFF_EXCLUSIVE_WITH = TagKey.create(Registries.ENCHANTMENT, FireworkFrenzy.id("exclusive_set/takeoff"));
 	}
-
 }
