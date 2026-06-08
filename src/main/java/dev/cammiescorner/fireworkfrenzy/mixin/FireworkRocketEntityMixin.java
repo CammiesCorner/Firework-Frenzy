@@ -86,14 +86,14 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 		Fireworks data = entityData.get(DATA_ID_FIREWORKS_ITEM).get(DataComponents.FIREWORKS);
 		Set<FireworkExplosion.Shape> types = EnumSet.noneOf(FireworkExplosion.Shape.class);
 		int glowingDuration = 0;
-		float knockbackAmount = 1.0F;
+		float knockbackAmount = 1f;
 
 		if(data != null) {
 			for(FireworkExplosion explosion : data.explosions()) {
 				types.add(explosion.shape());
 
 				if(explosion.hasTrail())
-					knockbackAmount += 0.1f;
+					knockbackAmount += 0.3f;
 				if(explosion.hasTwinkle())
 					glowingDuration += 20;
 			}
@@ -154,10 +154,11 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 
 					if(FireworkFrenzyConfig.allowRocketJumping) {
 						double multiplier = ((list.size() + (getItem().getOrDefault(FireworkFrenzyDataComponents.FIREBALL.get(), false) ? 1 : 0)) * 0.3) * knockbackAmount.get() * (target == owner ? FireworkFrenzyConfig.rocketJumpKnockbackMultiplier : FireworkFrenzyConfig.defaultKnockbackMultiplier);
+						var direction = hitResult.getLocation().subtract(adjustedPos).normalize().scale(multiplier / distance).multiply(1f, 0.4f, 1f);
 						var targetVelocity = target.getDeltaMovement();
 
-						targetVelocity = new Vec3(targetVelocity.x(), Math.max(1, Math.abs(targetVelocity.y())), targetVelocity.z()).scale(multiplier / distance);
-						target.setDeltaMovement(targetVelocity);
+						targetVelocity = new Vec3(targetVelocity.x(), Math.max(1, Math.abs(targetVelocity.y())), targetVelocity.z());
+						target.setDeltaMovement(targetVelocity.add(direction));
 						target.hurtMarked = true;
 
 						if(target instanceof ServerPlayer serverPlayer) {
@@ -194,10 +195,10 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 			DamageCloudEntity cloud = FireworkFrenzyEntityTypes.DAMAGE_CLOUD.get().create(level());
 
 			if(cloud != null) {
-				cloud.setRadius(blastSize.get());
+				cloud.setRadius(blastSize.get() / 2f);
 				cloud.setOwner(attachedToEntity);
 				cloud.setDuration(200);
-				cloud.setParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0xf8d26a));
+				cloud.setParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0xfff8d26a));
 				cloud.setPos(position().add(0, -cloud.getRadius(), 0));
 				level().addFreshEntity(cloud);
 			}
@@ -225,8 +226,13 @@ public abstract class FireworkRocketEntityMixin extends Projectile implements It
 	@Inject(method = "handleEntityEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;createFireworks(DDDDDDLjava/util/List;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
 	public void explosiveEnhancement(byte id, CallbackInfo ci, Vec3 vec3) {
 		if(FireworkFrenzyCompat.EXPLOSIVE_ENHANCEMENT.isEnabled()) {
+			boolean bigBall = false;
+
+			for(FireworkExplosion explosion : getExplosions())
+				bigBall = explosion.shape() == FireworkExplosion.Shape.LARGE_BALL;
+
 			if(getItem().getOrDefault(FireworkFrenzyDataComponents.FIREBALL.get(), false))
-				ExplosiveEnhancementCompat.spawnEnhancedBooms(level(), getX(), getY(), getZ(), 1.25f);
+				ExplosiveEnhancementCompat.spawnEnhancedBooms(level(), getX(), getY(), getZ(), bigBall ? 4f : 2f);
 			else
 				level().createFireworks(getX(), getY(), getZ(), vec3.x(), vec3.y(), vec3.z(), getExplosions());
 		}
