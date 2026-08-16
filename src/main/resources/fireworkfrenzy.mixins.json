@@ -14,9 +14,12 @@
     "PlayerMixin"
   ],
   "client": [
+    "client.AnimationUtilsMixin",
+    "client.ItemInHandRendererMixin",
+    "client.ItemPropertiesMixin",
     "client.LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+	}
 }

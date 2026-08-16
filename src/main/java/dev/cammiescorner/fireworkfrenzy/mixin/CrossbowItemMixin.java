@@ -1,8 +1,8 @@
 package dev.cammiescorner.fireworkfrenzy.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import dev.cammiescorner.fireworkfrenzy.FireworkFrenzy;
 import dev.cammiescorner.fireworkfrenzy.FireworkFrenzyConfig;
-import dev.cammiescorner.fireworkfrenzy.component.BlastJumper;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyComponents;
 import dev.cammiescorner.fireworkfrenzy.init.FireworkFrenzyEnchantments;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +14,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -22,9 +21,6 @@ import java.util.function.Predicate;
 
 @Mixin(CrossbowItem.class)
 public abstract class CrossbowItemMixin extends ProjectileWeaponItem {
-	@Unique
-	private static final ThreadLocal<BlastJumper> BLAST_JUMPER_COMPONENT = new ThreadLocal<>();
-
 	@Shadow
 	private static float getPowerForTime(int useTime, ItemStack crossbowStack) {
 		throw new UnsupportedOperationException();
@@ -40,24 +36,28 @@ public abstract class CrossbowItemMixin extends ProjectileWeaponItem {
 
 	@Inject(method = "onUseTick", at = @At("HEAD"))
 	private void setBlastJumperComponent(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration, CallbackInfo ci) {
-		BLAST_JUMPER_COMPONENT.set(FireworkFrenzyComponents.BLAST_JUMPER.getNullable(livingEntity));
+		FireworkFrenzy.BLAST_JUMPER_COMPONENT.set(FireworkFrenzyComponents.BLAST_JUMPER.getNullable(livingEntity));
 	}
 
 	@SuppressWarnings("ConstantValue")
 	@Inject(method = "onUseTick", at = @At("RETURN"))
 	private void fireworkfrenzy$stopUsingItem(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration, CallbackInfo ci) {
-		var component = BLAST_JUMPER_COMPONENT.get();
+		var component = FireworkFrenzy.BLAST_JUMPER_COMPONENT.get();
 		if (component != null && component.isBlastJumping() && EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.AIR_STRIKE.get(), stack) > 0 && getPowerForTime(getUseDuration(stack) - remainingUseDuration, stack) >= 1.0F) {
 			livingEntity.releaseUsingItem();
 		}
 
-		BLAST_JUMPER_COMPONENT.remove();
+		FireworkFrenzy.BLAST_JUMPER_COMPONENT.remove();
 	}
 
 	@ModifyReturnValue(method = "getChargeDuration", at = @At("RETURN"))
 	private static int airstrikeChargeDuration(int original, ItemStack stack) {
-		if (EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.AIR_STRIKE.get(), stack) > 0) {
-			var jumper = BLAST_JUMPER_COMPONENT.get();
+		if(EnchantmentHelper.getItemEnchantmentLevel(FireworkFrenzyEnchantments.AIR_STRIKE.get(), stack) > 0) {
+			var jumper = FireworkFrenzy.BLAST_JUMPER_COMPONENT.get();
+
+			if(jumper == null) {
+				new Throwable().printStackTrace();
+			}
 
 			return jumper != null && jumper.isBlastJumping() ? FireworkFrenzyConfig.airStrikeJumpingChargeTime : FireworkFrenzyConfig.airStrikeGroundedChargeTime;
 		}
